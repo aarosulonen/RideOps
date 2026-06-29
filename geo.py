@@ -3,12 +3,10 @@ import dotenv
 import os
 
 dotenv.load_dotenv()
-home_lat = float(os.getenv("HOME_COORDS_LAT"))
-home_lon = float(os.getenv("HOME_COORDS_LON"))
-work_lat = float(os.getenv("WORK_COORDS_LAT"))
-work_lon = float(os.getenv("WORK_COORDS_LON"))
+work_lat = float(os.getenv("WORK_COORD_LAT"))
+work_lon = float(os.getenv("WORK_COORD_LON"))
 
-is_near_radius = float(os.getenv("IS_NEAR_RADIUS", 500))  # Default to 500 meters if not set
+is_near_radius = float(os.getenv("CHECK_RADIUS_METERS", 500))  # Default to 500 meters if not set
 
 
 
@@ -30,8 +28,6 @@ def distance_between_coords(lat1, lon1, lat2, lon2):
     return R * c
   
   
-def is_near_home(lat, lon):
-    return distance_between_coords(lat, lon, home_lat, home_lon) <= is_near_radius
   
 def is_near_work(lat, lon):
     return distance_between_coords(lat, lon, work_lat, work_lon) <= is_near_radius

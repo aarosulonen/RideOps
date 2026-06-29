@@ -1,11 +1,12 @@
 from req import get_strava_activities, mark_activity_as_commute_and_mute
-from geo import is_near_home, is_near_work
+from geo import is_near_work
 from db import insert_activity, get_activity_by_strava_id, init_db
 
 
 def is_commute(activity: dict) -> bool:
     start_latlon = activity.get("start_latlng")
     end_latlon = activity.get("end_latlng")
+    
 
     if (
         not start_latlon

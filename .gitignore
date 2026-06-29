@@ -1,6 +1,6 @@
 .env
 .venv
-.tokens
+.tokens/strava.json
 .agents
 /__pycache__
 
