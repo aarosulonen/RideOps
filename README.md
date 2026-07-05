@@ -1,0 +1,80 @@
+# RideOps
+
+RideOps is a small automation service for keeping Strava commute activity clean with minimal manual work. It fetches recent Strava activities, detects rides or activities that start or end near a configured work location, marks them as commutes, hides them from the home feed, stores processed activity metadata locally, and sends a Telegram notification when a commute is handled.
+
+## What It Does
+
+- Fetches Strava activities for a configurable recent time window.
+- Detects commute activities using a Haversine distance check against work coordinates.
+- Updates matching Strava activities with `commute: true` and `hide_from_home: true`.
+- Stores processed activities in SQLite to avoid duplicate work.
+- Refreshes expired Strava access tokens automatically.
+- Sends Telegram alerts for newly processed commute activities.
+- Supports a dry-run mode in code for safe testing before mutating Strava data.
+
+
+## Project Structure
+
+```text
+RideOps/
+├── main.py              # Orchestrates fetching, detecting, updating, storing, and notifying
+├── req.py               # Strava API client and token refresh logic
+├── geo.py               # Distance calculation and work-location matching
+├── db.py                # SQLite schema and activity persistence
+├── telegram_notify.py   # Telegram message formatting and delivery
+├── requirements.txt     # Python dependencies
+└── .env.example         # Required environment variables
+```
+
+## Requirements
+
+- Python 3
+- A Strava API application
+- A Strava token state file at `.tokens/strava.json`
+- Optional: a Telegram bot token and chat ID for notifications
+
+Install dependencies:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+## Configuration
+
+Create a `.env` file from the example:
+
+```bash
+cp .env.example .env
+```
+
+Fill in:
+
+```env
+STRAVA_CLIENT_ID=
+STRAVA_CLIENT_SECRET=
+
+WORK_COORD_LAT=
+WORK_COORD_LON=
+CHECK_RADIUS_METERS=500
+
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_CHAT_ID=
+```
+
+RideOps also expects Strava token state at:
+
+```text
+.tokens/strava.json
+```
+
+The token state must include the fields returned by Strava OAuth, including `access_token`, `refresh_token`, and `expires_at`.
+
+## Run
+
+```bash
+python3 main.py
+```
+
+By default, `main.py` checks activities from the last 100 days. For safe testing, set `DRY_RUN = True` in `main.py` before running; this reports what would be changed without updating Strava.

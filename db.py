@@ -48,6 +48,20 @@ def insert_activity(activity):
     
     conn.commit()
     conn.close()
+
+
+def mark_activity_notified(strava_id):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute('''
+        UPDATE activities
+        SET notified = 1
+        WHERE strava_id = ?
+    ''', (strava_id,))
+
+    conn.commit()
+    conn.close()
   
 def get_activity_by_strava_id(strava_id):
   conn = sqlite3.connect(DB_PATH)

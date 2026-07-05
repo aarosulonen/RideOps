@@ -1,6 +1,7 @@
 from req import get_strava_activities, mark_activity_as_commute_and_mute
 from geo import is_near_work
-from db import insert_activity, get_activity_by_strava_id, init_db
+from db import insert_activity, get_activity_by_strava_id, init_db, mark_activity_notified
+from telegram_notify import TelegramNotificationError, send_activity_notification
 
 
 def is_commute(activity: dict) -> bool:
@@ -59,3 +60,11 @@ if __name__ == "__main__":
                 if success:
                     print(f"Updated activity {activity_id}")
                     insert_activity(activity)
+
+                    try:
+                        send_activity_notification(activity)
+                    except TelegramNotificationError as error:
+                        print(f"Telegram notification failed for activity {activity_id}: {error}")
+                    else:
+                        mark_activity_notified(activity_id)
+                        print(f"Telegram notification sent for activity {activity_id}")
