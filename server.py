@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 app = FastAPI(title="RideOps Strava Webhook")
 
 
-@app.get("/webhook")
+@app.get("/strava/webhook")
 def validate_webhook(
     mode: str | None = Query(None, alias="hub.mode"),
     verify_token: str | None = Query(None, alias="hub.verify_token"),
@@ -24,7 +24,7 @@ def validate_webhook(
     return {"hub.challenge": challenge}
 
 
-@app.post("/webhook")
+@app.post("/strava/webhook")
 def receive_webhook(event: dict, background_tasks: BackgroundTasks) -> dict[str, str]:
     if event.get("object_type") != "activity" or event.get("aspect_type") != "create":
         return {"status": "ignored"}
