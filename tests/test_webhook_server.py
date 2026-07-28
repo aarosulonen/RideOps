@@ -8,7 +8,7 @@ def test_subscription_validation_echoes_challenge(monkeypatch):
     client = TestClient(server.app)
 
     response = client.get(
-        "/webhook",
+        "/strava/webhook",
         params={
             "hub.mode": "subscribe",
             "hub.verify_token": "expected-token",
@@ -25,7 +25,7 @@ def test_subscription_validation_rejects_bad_token(monkeypatch):
     client = TestClient(server.app)
 
     response = client.get(
-        "/webhook",
+        "/strava/webhook",
         params={
             "hub.mode": "subscribe",
             "hub.verify_token": "wrong-token",
@@ -46,7 +46,7 @@ def test_create_activity_event_is_acknowledged_and_processed(monkeypatch):
     client = TestClient(server.app)
 
     response = client.post(
-        "/webhook",
+        "/strava/webhook",
         json={
             "object_type": "activity",
             "aspect_type": "create",
@@ -71,7 +71,7 @@ def test_irrelevant_event_is_acknowledged_without_processing(monkeypatch):
     client = TestClient(server.app)
 
     response = client.post(
-        "/webhook",
+        "/strava/webhook",
         json={"object_type": "activity", "aspect_type": "update", "object_id": 12345},
     )
 
