@@ -11,7 +11,11 @@ def process_and_notify(activity_id: int) -> None:
     result = process_created_activity(activity_id)
     print(f"Activity {activity_id}: {result.status}")
 
-    if result.status != "updated" or result.activity is None:
+    if (
+        result.status != "updated"
+        or result.activity is None
+        or result.notification_attempted
+    ):
         return
 
     try:

@@ -1,22 +1,43 @@
 # Strava webhook server
 
-Set `STRAVA_WEBHOOK_VERIFY_TOKEN` to a long random value in `.env`, then either
-start the Docker service or run the server directly:
+RideOps exposes its Strava callback at `/strava/webhook`.
 
-```powershell
-docker compose up --build -d
-```
+## Setup
 
-```powershell
-.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
-.\.venv\Scripts\uvicorn server:app --host 0.0.0.0 --port 8000
-```
+1. Set a long random `STRAVA_WEBHOOK_VERIFY_TOKEN` in `.env`.
+2. Start the service:
 
-Expose `https://<public-host>/strava/webhook` through a public HTTPS tunnel or
-deployment, then create the Strava push subscription with that URL and the same
-verification token. The athlete token needs `activity:read` and `activity:write`;
-add `activity:read_all` when Only Me activities must be read or updated.
+   ```bash
+   docker compose up --build -d
+   ```
 
-The endpoint immediately acknowledges deliveries. It fetches and processes only
-new activity events: an activity beginning or ending inside the configured work
-radius is marked as a commute and hidden from the home feed.
+   For direct local execution:
+
+   ```powershell
+   .\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+   .\.venv\Scripts\uvicorn server:app --host 0.0.0.0 --port 8000
+   ```
+
+3. Expose the service over public HTTPS and create the Strava push subscription using:
+
+   ```text
+   https://<public-host>/strava/webhook
+   ```
+
+   Use the same verification token in the Strava subscription request.
+
+## Endpoints
+
+- `GET /strava/webhook` validates a Strava subscription. It verifies `hub.mode` and `hub.verify_token`, then returns the `hub.challenge` value.
+- `POST /strava/webhook` immediately acknowledges incoming events. Only `activity` `create` events are queued for background processing; update, delete, and athlete events are acknowledged as ignored.
+- `GET /health` is the container health endpoint.
+
+## Processing
+
+The webhook event supplies an activity ID, so RideOps fetches the full activity from Strava before evaluating it. An activity with a start or end point inside the configured work radius is marked as a commute and hidden from the home feed. Successfully updated commutes are saved in SQLite for deduplication.
+
+After a successful Strava commute update, webhook processing sends one Telegram notification and marks the activity notified only when delivery succeeds. A Telegram failure does not undo the Strava edit; the notification remains pending.
+
+## Required Strava permissions
+
+The authorizing athlete needs `activity:read` and `activity:write`. Add `activity:read_all` when Only Me activities must be read or updated.
