@@ -10,14 +10,14 @@ RideOps is a small automation service for keeping Strava commute activity clean 
 - Stores processed activities in SQLite to avoid duplicate work.
 - Refreshes expired Strava access tokens automatically.
 - Sends Telegram alerts for newly processed commute activities.
-- Supports a dry-run mode in code for safe testing before mutating Strava data.
 
 
 ## Project Structure
 
 ```text
 RideOps/
-├── main.py              # Orchestrates fetching, detecting, updating, storing, and notifying
+├── cli.py               # Manual activity processing and backfill commands
+├── activity_rules.py    # Commute classification rule
 ├── req.py               # Strava API client and token refresh logic
 ├── geo.py               # Distance calculation and work-location matching
 ├── db.py                # SQLite schema and activity persistence
@@ -71,13 +71,25 @@ RideOps also expects Strava token state at:
 
 The token state must include the fields returned by Strava OAuth, including `access_token`, `refresh_token`, and `expires_at`.
 
-## Run
+## Manual operations
+
+Process one known Strava activity through the same commute workflow used by the
+webhook:
 
 ```bash
-python3 main.py
+python cli.py process <activity-id>
 ```
 
-By default, `main.py` checks activities from the last 100 days. For safe testing, set `DRY_RUN = True` in `main.py` before running; this reports what would be changed without updating Strava.
+Backfill recent activities manually. The default window is seven days:
+
+```bash
+python cli.py backfill
+python cli.py backfill --days 30
+```
+
+A manual run sends a Telegram notification only after it successfully updates a
+commute activity. If Telegram delivery fails, the Strava edit remains in place
+and the notification stays pending.
 
 ## Docker webhook server
 
