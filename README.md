@@ -78,3 +78,25 @@ python3 main.py
 ```
 
 By default, `main.py` checks activities from the last 100 days. For safe testing, set `DRY_RUN = True` in `main.py` before running; this reports what would be changed without updating Strava.
+
+## Docker webhook server
+
+The container runs the FastAPI webhook server, not the batch script. Create
+`.env` from `.env.example`, place the refreshable Strava token in
+`.tokens/strava.json`, then start it with:
+
+```bash
+docker compose up --build -d
+```
+
+Docker publishes the service on port 8000. Configure Strava with the public
+callback URL `https://<public-host>/strava/webhook`. The `.tokens` directory is
+bind-mounted so token refreshes persist on the host; SQLite data is retained in
+the `rideops-data` named Docker volume. Ensure `.tokens` is writable by the
+container user.
+
+Check service health with:
+
+```bash
+curl http://localhost:8000/health
+```

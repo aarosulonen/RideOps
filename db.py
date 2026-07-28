@@ -1,9 +1,16 @@
+import os
 import sqlite3
+from pathlib import Path
 
-DB_PATH = "rideops.db"
+
+def get_db_path() -> Path:
+    return Path(os.getenv("RIDEOPS_DB_PATH", "rideops.db"))
+
 
 def init_db():
-    conn = sqlite3.connect(DB_PATH)
+    db_path = get_db_path()
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     
     cursor.execute('''
@@ -29,7 +36,7 @@ def init_db():
     
     
 def insert_activity(activity):
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(get_db_path())
     cursor = conn.cursor()
     
     cursor.execute('''
@@ -51,7 +58,7 @@ def insert_activity(activity):
 
 
 def mark_activity_notified(strava_id):
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(get_db_path())
     cursor = conn.cursor()
 
     cursor.execute('''
@@ -63,8 +70,9 @@ def mark_activity_notified(strava_id):
     conn.commit()
     conn.close()
   
+
 def get_activity_by_strava_id(strava_id):
-  conn = sqlite3.connect(DB_PATH)
+  conn = sqlite3.connect(get_db_path())
   cursor = conn.cursor()
   
   cursor.execute('''

@@ -1,14 +1,18 @@
 # Strava webhook server
 
-Set `STRAVA_WEBHOOK_VERIFY_TOKEN` to a long random value in `.env`, then install
-the webhook dependencies and run the server:
+Set `STRAVA_WEBHOOK_VERIFY_TOKEN` to a long random value in `.env`, then either
+start the Docker service or run the server directly:
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install -r requirements-webhook.txt
+docker compose up --build -d
+```
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
 .\.venv\Scripts\uvicorn server:app --host 0.0.0.0 --port 8000
 ```
 
-Expose `https://<public-host>/webhook` through a public HTTPS tunnel or
+Expose `https://<public-host>/strava/webhook` through a public HTTPS tunnel or
 deployment, then create the Strava push subscription with that URL and the same
 verification token. The athlete token needs `activity:read` and `activity:write`;
 add `activity:read_all` when Only Me activities must be read or updated.

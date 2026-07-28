@@ -1,0 +1,13 @@
+.env
+.tokens
+.venv
+.git
+.agents
+__pycache__/
+.pytest_cache/
+*.pyc
+*.db
+tests/
+bot.py
+README.md
+WEBHOOK.md

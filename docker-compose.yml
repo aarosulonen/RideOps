@@ -1,0 +1,16 @@
+services:
+  rideops:
+    build: .
+    env_file: .env
+    environment:
+      RIDEOPS_DB_PATH: /app/data/rideops.db
+      STRAVA_TOKEN_FILE: /app/.tokens/strava.json
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./.tokens:/app/.tokens
+      - rideops-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  rideops-data:

@@ -1,13 +1,23 @@
 import logging
 import os
+from contextlib import asynccontextmanager
 
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Query
 
 from activity_processor import process_created_activity
+from db import init_db
 
 
 logger = logging.getLogger(__name__)
-app = FastAPI(title="RideOps Strava Webhook")
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    init_db()
+    yield
+
+
+app = FastAPI(title="RideOps Strava Webhook", lifespan=lifespan)
 
 
 @app.get("/strava/webhook")
@@ -36,6 +46,7 @@ def receive_webhook(event: dict, background_tasks: BackgroundTasks) -> dict[str,
     background_tasks.add_task(process_created_activity, activity_id)
     logger.info("Accepted create event for activity %s.", activity_id)
     return {"status": "accepted"}
+
 
 @app.get("/health")
 def health():
