@@ -36,3 +36,7 @@ def receive_webhook(event: dict, background_tasks: BackgroundTasks) -> dict[str,
     background_tasks.add_task(process_created_activity, activity_id)
     logger.info("Accepted create event for activity %s.", activity_id)
     return {"status": "accepted"}
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
