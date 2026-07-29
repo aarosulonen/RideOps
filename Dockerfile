@@ -1,11 +1,15 @@
 FROM python:3.13-slim
 
+ARG APP_UID=1000
+ARG APP_GID=1000
+
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-RUN addgroup --system appuser && adduser --system --ingroup appuser appuser
+RUN addgroup --gid "${APP_GID}" appuser \
+    && adduser --disabled-password --gecos "" --uid "${APP_UID}" --gid "${APP_GID}" appuser
 
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt

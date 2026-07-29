@@ -1,6 +1,10 @@
 services:
   rideops:
-    build: .
+    build:
+      context: .
+      args:
+        APP_UID: ${RIDEOPS_UID:-1000}
+        APP_GID: ${RIDEOPS_GID:-1000}
     env_file: .env
     environment:
       RIDEOPS_DB_PATH: /app/data/rideops.db

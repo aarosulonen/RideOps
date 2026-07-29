@@ -68,6 +68,14 @@ Docker bind-mounts `.tokens` so token refreshes persist on the host and stores S
 curl http://localhost:8000/health
 ```
 
+The container defaults to UID/GID `1000:1000` so it can update the
+bind-mounted token file. If the host user has different IDs, set them when
+building:
+
+```bash
+RIDEOPS_UID=$(id -u) RIDEOPS_GID=$(id -g) docker compose up --build -d
+```
+
 ## Manual operations
 
 Install development dependencies when running locally:
