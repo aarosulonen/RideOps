@@ -44,7 +44,7 @@ TELEGRAM_BOT_TOKEN=
 TELEGRAM_CHAT_ID=
 ```
 
-Place the refreshable Strava OAuth token JSON at `.tokens/strava.json`. It must include `access_token`, `refresh_token`, and `expires_at`.
+Place the refreshable [Strava OAuth token JSON](https://developers.strava.com/docs/authentication/) at `.tokens/strava.json`. It must include `access_token`, `refresh_token`, and `expires_at`.
 
 The authorizing athlete needs `activity:read` and `activity:write`. Add `activity:read_all` when Only Me activities must be read or updated.
 
@@ -56,7 +56,7 @@ Start the production-style local service:
 docker compose up --build -d
 ```
 
-The server listens on port 8000. Configure Strava with the public callback URL:
+The server listens on port 8000. [Configure Strava](https://developers.strava.com/docs/webhooks/) with the public callback URL:
 
 ```text
 https://<public-host>/strava/webhook
